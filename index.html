@@ -261,10 +261,21 @@
 
     .grid-shell {
       display: grid;
-      width: max-content;
-      grid-template-columns: minmax(var(--row-title-w), max-content) max-content;
+      --edit-guide-bg: rgba(47, 111, 159, 0.025);
+      --edit-guide-line: rgba(47, 111, 159, 0.18);
+      --edit-guide-line-strong: rgba(47, 111, 159, 0.24);
+      width: fit-content;
+      max-width: 100%;
+      min-width: 0;
+      grid-template-columns: minmax(var(--row-title-w), max-content) minmax(0, var(--board-view-w, 1fr));
       grid-template-rows: var(--column-title-h) auto;
+      justify-content: start;
       gap: var(--gap);
+    }
+
+    .grid-shell.is-edit-mode {
+      grid-template-columns: minmax(var(--row-title-w), max-content) minmax(0, var(--board-view-w, 1fr)) auto;
+      grid-template-rows: var(--column-title-h) auto auto;
     }
 
     .corner-cell,
@@ -288,6 +299,12 @@
       grid-row: 1;
       grid-template-columns: repeat(var(--grid-columns), var(--card-w));
       gap: var(--gap);
+      width: 100%;
+      min-width: 0;
+      overflow-x: auto;
+      overflow-y: hidden;
+      overscroll-behavior-x: contain;
+      scrollbar-width: thin;
     }
 
     .row-headers {
@@ -373,21 +390,128 @@
       opacity: 0;
     }
 
+    .grid-shell.is-edit-mode .corner-cell,
+    .grid-shell.is-edit-mode .card,
+    .grid-shell.is-edit-mode .empty-slot {
+      border-color: var(--edit-guide-line);
+    }
+
+    .grid-shell.is-edit-mode .column-headers,
+    .grid-shell.is-edit-mode .row-headers {
+      border-radius: 8px;
+      background-color: var(--edit-guide-bg);
+      box-shadow: inset 0 0 0 1px var(--edit-guide-line-strong);
+    }
+
+    .edge-add-button {
+      display: none;
+      place-items: center;
+      border: 1px solid transparent;
+      border-radius: 8px;
+      background: transparent;
+      color: var(--accent);
+      transition: background 150ms ease, border-color 150ms ease, box-shadow 150ms ease, opacity 150ms ease;
+    }
+
+    .grid-shell.is-edit-mode .edge-add-button {
+      display: grid;
+      border-color: var(--edit-guide-line);
+    }
+
+    .add-column-button {
+      grid-column: 3;
+      grid-row: 1 / 3;
+      width: var(--column-title-h);
+      min-height: 100%;
+    }
+
+    .add-row-button {
+      grid-column: 1 / -1;
+      grid-row: 3;
+      min-width: 0;
+      height: var(--column-title-h);
+      justify-self: stretch;
+    }
+
+    .edge-add-button::before {
+      display: grid;
+      width: 28px;
+      height: 28px;
+      place-items: center;
+      border-radius: 8px;
+      content: "+";
+      font-size: 1.24rem;
+      font-weight: 850;
+      line-height: 1;
+      opacity: 0;
+      transition: opacity 150ms ease;
+    }
+
+    .edge-add-button:hover,
+    .edge-add-button:focus-visible {
+      background: rgba(47, 111, 159, 0.06);
+      border-color: #c4cedb;
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.72);
+      outline: 0;
+    }
+
+    .edge-add-button:hover::before,
+    .edge-add-button:focus-visible::before {
+      opacity: 1;
+    }
+
+    .edge-add-button:disabled {
+      cursor: not-allowed;
+      opacity: 0.42;
+    }
+
     .board {
       position: relative;
       display: grid;
       grid-column: 2;
       grid-row: 2;
-      grid-template-columns: repeat(var(--grid-columns), var(--card-w));
       grid-template-rows: repeat(var(--grid-rows), var(--card-h));
       grid-auto-rows: var(--card-h);
       gap: var(--gap);
       align-items: stretch;
-      width: max-content;
+      width: 100%;
+      min-width: 0;
       min-height: var(--card-h);
       border-radius: 8px;
       transition: background-color 150ms ease;
       touch-action: pan-y;
+    }
+
+    .board-row {
+      width: 100%;
+      min-width: 0;
+      height: var(--card-h);
+      overflow-x: auto;
+      overflow-y: hidden;
+      overscroll-behavior-x: contain;
+      scrollbar-width: thin;
+    }
+
+    .board-row-track {
+      display: grid;
+      width: max-content;
+      min-width: max-content;
+      height: var(--card-h);
+      grid-template-columns: repeat(var(--grid-columns), var(--card-w));
+      gap: var(--gap);
+    }
+
+    .column-headers::-webkit-scrollbar,
+    .board-row::-webkit-scrollbar {
+      height: 8px;
+    }
+
+    .column-headers::-webkit-scrollbar-thumb,
+    .board-row::-webkit-scrollbar-thumb {
+      border: 2px solid transparent;
+      border-radius: 999px;
+      background: rgba(96, 111, 128, 0.28);
+      background-clip: padding-box;
     }
 
     .board.is-dragging {
@@ -397,6 +521,13 @@
         linear-gradient(to bottom, rgba(47, 111, 159, 0.2) 1px, transparent 1px);
       background-size: var(--cell-w) var(--cell-h);
       background-position: 0 0;
+    }
+
+    .grid-shell.is-edit-mode .board.is-dragging .board-row-track {
+      background-color: rgba(47, 111, 159, 0.045);
+      background-image:
+        linear-gradient(to right, rgba(47, 111, 159, 0.2) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(47, 111, 159, 0.2) 1px, transparent 1px);
     }
 
     .empty-slot {
@@ -460,13 +591,15 @@
     .card {
       position: relative;
       display: grid;
+      --card-icon-size: clamp(32px, min(calc(var(--card-w) * 0.38), calc(var(--card-h) * 0.38)), 40px);
+      --card-pad: clamp(6px, calc(var(--card-h) * 0.075), 8px);
       width: var(--card-w);
       height: var(--card-h);
       place-items: center;
       align-content: center;
-      gap: 6px;
+      gap: clamp(4px, calc(var(--card-h) * 0.055), 6px);
       overflow: visible;
-      padding: 8px;
+      padding: var(--card-pad);
       border: 1px solid transparent;
       border-radius: 8px;
       background: transparent;
@@ -495,8 +628,8 @@
 
     .card-icon {
       display: grid;
-      width: 40px;
-      height: 40px;
+      width: var(--card-icon-size);
+      height: var(--card-icon-size);
       place-items: center;
       overflow: hidden;
       border-radius: 50%;
@@ -508,8 +641,8 @@
     }
 
     .card-icon-img {
-      width: 24px;
-      height: 24px;
+      width: 60%;
+      height: 60%;
       object-fit: contain;
     }
 
@@ -622,6 +755,9 @@
     }
 
     .menu-item {
+      display: flex;
+      align-items: center;
+      justify-content: center;
       min-height: 30px;
       padding: 0 10px;
       border: 0;
@@ -629,7 +765,7 @@
       color: var(--ink);
       font-size: 0.78rem;
       font-weight: 650;
-      text-align: left;
+      text-align: center;
     }
 
     .menu-item:hover {
@@ -962,6 +1098,8 @@
       <div class="column-headers" id="columnHeaders" aria-label="열 타이틀"></div>
       <div class="row-headers" id="rowHeaders" aria-label="행 타이틀"></div>
       <section class="board" id="board" aria-label="시작페이지 카드"></section>
+      <button class="edge-add-button add-column-button" id="addColumnButton" type="button" aria-label="열 추가" title="열 추가"></button>
+      <button class="edge-add-button add-row-button" id="addRowButton" type="button" aria-label="행 추가" title="행 추가"></button>
     </section>
   </main>
 
@@ -1027,6 +1165,19 @@
           </div>
         </section>
         <section class="settings-section">
+          <h3 class="settings-section-title">카드 크기</h3>
+          <div class="grid-settings">
+            <div class="field">
+              <label for="cardWidth">넓이(px)</label>
+              <input id="cardWidth" name="cardWidth" type="number" min="80" max="220" step="1" inputmode="numeric">
+            </div>
+            <div class="field">
+              <label for="cardHeight">높이(px)</label>
+              <input id="cardHeight" name="cardHeight" type="number" min="80" max="220" step="1" inputmode="numeric">
+            </div>
+          </div>
+        </section>
+        <section class="settings-section">
           <h3 class="settings-section-title">구성 JSON</h3>
           <div class="settings-transfer-actions">
             <button class="secondary-button" id="exportConfigButton" type="button">내보내기</button>
@@ -1066,12 +1217,17 @@
       const STORAGE_KEY = "startpage:v1";
       const LONG_PRESS_MS = 360;
       const MOVE_TOLERANCE = 8;
+      const DEFAULT_CARD_SIZE = 108;
+      const MIN_CARD_SIZE = 80;
+      const MAX_CARD_SIZE = 220;
 
       const gridShell = document.getElementById("gridShell");
       const columnHeaders = document.getElementById("columnHeaders");
       const rowHeaders = document.getElementById("rowHeaders");
       const board = document.getElementById("board");
       const addButton = document.getElementById("addButton");
+      const addColumnButton = document.getElementById("addColumnButton");
+      const addRowButton = document.getElementById("addRowButton");
       const settingsButton = document.getElementById("settingsButton");
       const cardDialog = document.getElementById("cardDialog");
       const cardForm = document.getElementById("cardForm");
@@ -1088,6 +1244,8 @@
       const settingsCloseButton = document.getElementById("settingsCloseButton");
       const gridColumns = document.getElementById("gridColumns");
       const gridRows = document.getElementById("gridRows");
+      const cardWidth = document.getElementById("cardWidth");
+      const cardHeight = document.getElementById("cardHeight");
       const exportConfigButton = document.getElementById("exportConfigButton");
       const importConfigButton = document.getElementById("importConfigButton");
       const importConfigFile = document.getElementById("importConfigFile");
@@ -1112,7 +1270,13 @@
       function getDefaultState() {
         return {
           cards: [],
-          settings: { openMode: "current", gridColumns: 5, gridRows: 5 },
+          settings: {
+            openMode: "current",
+            gridColumns: 5,
+            gridRows: 5,
+            cardWidth: DEFAULT_CARD_SIZE,
+            cardHeight: DEFAULT_CARD_SIZE
+          },
           rowTitles: [],
           columnTitles: []
         };
@@ -1148,7 +1312,9 @@
           settings: {
             openMode: saved.settings && saved.settings.openMode === "new" ? "new" : "current",
             gridColumns: clampGridSize(saved.settings && saved.settings.gridColumns, 5),
-            gridRows: clampGridSize(saved.settings && saved.settings.gridRows, 5)
+            gridRows: clampGridSize(saved.settings && saved.settings.gridRows, 5),
+            cardWidth: clampCardSize(saved.settings && saved.settings.cardWidth, DEFAULT_CARD_SIZE),
+            cardHeight: clampCardSize(saved.settings && saved.settings.cardHeight, DEFAULT_CARD_SIZE)
           },
           rowTitles: normalizeTitles(saved.rowTitles),
           columnTitles: normalizeTitles(saved.columnTitles)
@@ -1176,6 +1342,12 @@
         const number = Number.parseInt(value, 10);
         if (!Number.isFinite(number)) return fallback;
         return Math.max(1, Math.min(12, number));
+      }
+
+      function clampCardSize(value, fallback) {
+        const number = Number.parseInt(value, 10);
+        if (!Number.isFinite(number)) return fallback;
+        return Math.max(MIN_CARD_SIZE, Math.min(MAX_CARD_SIZE, number));
       }
 
       function normalizeSlot(value, fallback) {
@@ -1235,12 +1407,36 @@
       function placeElementAtSlot(element, slot) {
         const columns = getColumnCount();
         element.style.gridColumn = String((slot % columns) + 1);
-        element.style.gridRow = String(Math.floor(slot / columns) + 1);
+        element.style.gridRow = "";
       }
 
       function applyBoardSettings() {
         gridShell.style.setProperty("--grid-columns", String(clampGridSize(state.settings.gridColumns, 5)));
         gridShell.style.setProperty("--grid-rows", String(clampGridSize(state.settings.gridRows, 5)));
+        gridShell.style.setProperty("--card-w", `${clampCardSize(state.settings.cardWidth, DEFAULT_CARD_SIZE)}px`);
+        gridShell.style.setProperty("--card-h", `${clampCardSize(state.settings.cardHeight, DEFAULT_CARD_SIZE)}px`);
+      }
+
+      function updateBoardViewportWidth() {
+        const columns = getColumnCount();
+        const style = getComputedStyle(gridShell);
+        const gap = Number.parseFloat(style.gap) || 0;
+        const cardWidth = clampCardSize(state.settings.cardWidth, DEFAULT_CARD_SIZE);
+        const contentWidth = (columns * cardWidth) + (Math.max(0, columns - 1) * gap);
+        const rowTitleWidth = rowHeaders.getBoundingClientRect().width || Number.parseFloat(style.getPropertyValue("--row-title-w")) || 0;
+        const addColumnWidth = isEditMode ? (Number.parseFloat(style.getPropertyValue("--column-title-h")) || 0) : 0;
+        const reservedGaps = isEditMode ? gap * 2 : gap;
+        const parent = gridShell.parentElement;
+        const parentStyle = parent ? getComputedStyle(parent) : null;
+        const parentWidth = parent
+          ? parent.clientWidth
+            - (Number.parseFloat(parentStyle.paddingLeft) || 0)
+            - (Number.parseFloat(parentStyle.paddingRight) || 0)
+          : gridShell.clientWidth;
+        const availableWidth = Math.max(0, parentWidth - rowTitleWidth - addColumnWidth - reservedGaps);
+        const nextWidth = Math.max(0, Math.min(contentWidth, availableWidth));
+
+        gridShell.style.setProperty("--board-view-w", `${nextWidth}px`);
       }
 
       function escapeText(value) {
@@ -1272,19 +1468,44 @@
         board.textContent = "";
 
         state.cards = normalizeCards(state.cards);
-        renderEmptySlots();
-
-        state.cards.forEach((card, index) => {
-          board.append(createCardElement(card, index));
-        });
+        renderBoardRows();
+        updateBoardViewportWidth();
       }
 
-      function renderEmptySlots() {
-        const occupiedSlots = new Set(state.cards.map((card, index) => normalizeSlot(card.slot, index)));
+      function renderBoardRows() {
+        const columns = getColumnCount();
+        const configuredRows = clampGridSize(state.settings.gridRows, 5);
+        const maxCardRow = state.cards.reduce((maxRow, card, index) => {
+          const slot = normalizeSlot(card.slot, index);
+          return Math.max(maxRow, Math.floor(slot / columns));
+        }, -1);
+        const visibleRows = Math.max(configuredRows, maxCardRow + 1);
+        const cardsBySlot = new Map(state.cards.map((card, index) => [
+          normalizeSlot(card.slot, index),
+          { card, index }
+        ]));
 
-        for (let slot = 0; slot < getGridSlotCount(); slot += 1) {
-          if (occupiedSlots.has(slot)) continue;
-          board.append(createEmptySlotElement(slot));
+        for (let row = 0; row < visibleRows; row += 1) {
+          const rowElement = document.createElement("div");
+          rowElement.className = "board-row";
+          rowElement.dataset.row = String(row);
+          rowElement.setAttribute("aria-label", `${row + 1}행 카드`);
+
+          const track = document.createElement("div");
+          track.className = "board-row-track";
+
+          for (let column = 0; column < columns; column += 1) {
+            const slot = (row * columns) + column;
+            const cardEntry = cardsBySlot.get(slot);
+            if (cardEntry) {
+              track.append(createCardElement(cardEntry.card, cardEntry.index));
+            } else if (row < configuredRows) {
+              track.append(createEmptySlotElement(slot));
+            }
+          }
+
+          rowElement.append(track);
+          board.append(rowElement);
         }
       }
 
@@ -1350,12 +1571,43 @@
         addButton.setAttribute("aria-pressed", String(isEditMode));
         addButton.setAttribute("aria-label", isEditMode ? "편집 모드 끄기" : "편집 모드 켜기");
         addButton.title = isEditMode ? "편집 모드 끄기" : "편집 모드 켜기";
+        addColumnButton.tabIndex = isEditMode ? 0 : -1;
+        addRowButton.tabIndex = isEditMode ? 0 : -1;
+        addColumnButton.disabled = !isEditMode || getColumnCount() >= 12;
+        addRowButton.disabled = !isEditMode || clampGridSize(state.settings.gridRows, 5) >= 12;
+        addColumnButton.setAttribute("aria-label", getColumnCount() >= 12 ? "열은 최대 12개까지 추가할 수 있습니다" : "열 추가");
+        addRowButton.setAttribute("aria-label", clampGridSize(state.settings.gridRows, 5) >= 12 ? "행은 최대 12개까지 추가할 수 있습니다" : "행 추가");
         board.querySelectorAll(".empty-slot").forEach((slot) => {
           slot.tabIndex = isEditMode ? 0 : -1;
         });
         gridShell.querySelectorAll(".title-cell").forEach((cell) => {
           cell.tabIndex = isEditMode ? 0 : -1;
         });
+      }
+
+      function addColumn() {
+        if (!isEditMode) return;
+
+        const currentColumns = getColumnCount();
+        const nextColumns = clampGridSize(currentColumns + 1, currentColumns);
+        if (nextColumns === currentColumns) return;
+
+        preserveCardCoordinates(currentColumns, nextColumns);
+        state.settings.gridColumns = nextColumns;
+        saveState();
+        render();
+      }
+
+      function addRow() {
+        if (!isEditMode) return;
+
+        const currentRows = clampGridSize(state.settings.gridRows, 5);
+        const nextRows = clampGridSize(currentRows + 1, currentRows);
+        if (nextRows === currentRows) return;
+
+        state.settings.gridRows = nextRows;
+        saveState();
+        render();
       }
 
       function getCardInitial(name) {
@@ -1574,6 +1826,8 @@
         input.value = state.settings.openMode;
         gridColumns.value = String(clampGridSize(state.settings.gridColumns, 5));
         gridRows.value = String(clampGridSize(state.settings.gridRows, 5));
+        cardWidth.value = String(clampCardSize(state.settings.cardWidth, DEFAULT_CARD_SIZE));
+        cardHeight.value = String(clampCardSize(state.settings.cardHeight, DEFAULT_CARD_SIZE));
         settingsImportError.textContent = "";
         importConfigFile.value = "";
         settingsDialog.showModal();
@@ -1942,28 +2196,54 @@
       function insertMarker(slot) {
         if (!dragState) return;
 
+        const rowTrack = getRowTrack(Math.floor(slot / getColumnCount()));
+        if (!rowTrack) return;
+
         placeElementAtSlot(dragState.marker, slot);
         if (!dragState.marker.isConnected) {
-          board.append(dragState.marker);
+          rowTrack.append(dragState.marker);
+          return;
         }
+
+        rowTrack.append(dragState.marker);
       }
 
       function getDropSlot(clientX, clientY) {
         if (!dragState) return 0;
 
-        const rect = board.getBoundingClientRect();
+        const rows = [...board.querySelectorAll(".board-row")];
+        if (!rows.length) return 0;
+
+        let rowIndex = rows.findIndex((row) => {
+          const rect = row.getBoundingClientRect();
+          return clientY >= rect.top && clientY <= rect.bottom;
+        });
+
+        if (rowIndex < 0) {
+          rowIndex = rows.reduce((closestIndex, row, index) => {
+            const rect = row.getBoundingClientRect();
+            const center = rect.top + (rect.height / 2);
+            const closestRect = rows[closestIndex].getBoundingClientRect();
+            const closestCenter = closestRect.top + (closestRect.height / 2);
+            return Math.abs(clientY - center) < Math.abs(clientY - closestCenter) ? index : closestIndex;
+          }, 0);
+        }
+
+        const row = rows[rowIndex];
+        const rect = row.getBoundingClientRect();
         const gap = getGridGap();
         const columns = getColumnCount();
         const cellRect = dragState.marker.getBoundingClientRect();
         const cellWidth = Math.max(1, cellRect.width + gap.column);
-        const cellHeight = Math.max(1, cellRect.height + gap.row);
-        const relX = clientX - rect.left;
-        const relY = clientY - rect.top;
+        const relX = clientX - rect.left + row.scrollLeft;
         const col = Math.max(0, Math.min(columns - 1, Math.floor(relX / cellWidth)));
-        const row = Math.max(0, Math.floor(relY / cellHeight));
-        const slot = row * columns + col;
+        const slot = rowIndex * columns + col;
 
         return Math.max(0, Math.min(slot, getMaxDropSlot(columns)));
+      }
+
+      function getRowTrack(rowIndex) {
+        return board.querySelector(`.board-row[data-row="${rowIndex}"] .board-row-track`);
       }
 
       function getMaxDropSlot(columns) {
@@ -1977,13 +2257,16 @@
 
       function getGridGap() {
         const style = getComputedStyle(board);
+        const trackStyle = getComputedStyle(board.querySelector(".board-row-track") || board);
         return {
-          column: Number.parseFloat(style.columnGap) || 0,
+          column: Number.parseFloat(trackStyle.columnGap) || 0,
           row: Number.parseFloat(style.rowGap) || 0
         };
       }
 
       addButton.addEventListener("click", toggleEditMode);
+      addColumnButton.addEventListener("click", addColumn);
+      addRowButton.addEventListener("click", addRow);
       settingsButton.addEventListener("click", openSettingsDialog);
       cardCancelButton.addEventListener("click", closeCardDialog);
       cardCloseButton.addEventListener("click", closeCardDialog);
@@ -2014,6 +2297,8 @@
         preserveCardCoordinates(currentColumns, nextColumns);
         state.settings.gridColumns = nextColumns;
         state.settings.gridRows = clampGridSize(gridRows.value, 5);
+        state.settings.cardWidth = clampCardSize(cardWidth.value, DEFAULT_CARD_SIZE);
+        state.settings.cardHeight = clampCardSize(cardHeight.value, DEFAULT_CARD_SIZE);
         saveState();
         closeSettingsDialog();
         render();
@@ -2092,6 +2377,7 @@
           cancelDrag();
         }
       });
+      window.addEventListener("resize", updateBoardViewportWidth);
       document.addEventListener("click", (event) => {
         if (!openMenuId) return;
         if (event.target.closest(".card-menu") || event.target.closest(".card-menu-button")) return;
