@@ -1,0 +1,2086 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Start</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%232a2f37'/%3E%3Ctext x='16' y='22' text-anchor='middle' font-size='18' font-family='Arial' font-weight='700' fill='white'%3ES%3C/text%3E%3C/svg%3E">
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f6f7fb;
+      --surface: #ffffff;
+      --surface-strong: #f0f4f3;
+      --ink: #20242a;
+      --muted: #626b76;
+      --line: #d9dee7;
+      --accent: #2f6f9f;
+      --accent-strong: #245777;
+      --danger: #b94d4d;
+      --gold: #a66a21;
+      --shadow: 0 14px 34px rgba(22, 31, 44, 0.12);
+      --card-h: 108px;
+      --card-w: var(--card-h);
+      --gap: 12px;
+      --cell-w: calc(var(--card-w) + var(--gap));
+      --cell-h: calc(var(--card-h) + var(--gap));
+      --grid-columns: 5;
+      --grid-rows: 5;
+      --column-title-h: 42px;
+      --row-title-w: var(--column-title-h);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      min-height: 100%;
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+    }
+
+    button,
+    input,
+    textarea {
+      font: inherit;
+    }
+
+    button {
+      cursor: pointer;
+    }
+
+    .shell {
+      width: min(1180px, 100%);
+      margin: 0 auto;
+      padding: 30px clamp(16px, 4vw, 46px) 48px;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      margin-bottom: 28px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 0;
+    }
+
+    .brand-mark {
+      display: grid;
+      width: 38px;
+      height: 38px;
+      place-items: center;
+      border-radius: 8px;
+      background: #2a2f37;
+      color: #fff;
+      font-weight: 800;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(1.5rem, 3vw, 2.35rem);
+      line-height: 1;
+      letter-spacing: 0;
+    }
+
+    .actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-shrink: 0;
+    }
+
+    .icon-button,
+    .primary-button,
+    .secondary-button,
+    .danger-button,
+    .ghost-button {
+      min-height: 38px;
+      border-radius: 8px;
+      border: 1px solid transparent;
+      transition: background 150ms ease, border-color 150ms ease, box-shadow 150ms ease, transform 150ms ease;
+    }
+
+    .icon-button {
+      display: grid;
+      width: 38px;
+      place-items: center;
+      background: var(--surface);
+      border-color: var(--line);
+      color: var(--ink);
+      box-shadow: 0 5px 16px rgba(22, 31, 44, 0.06);
+    }
+
+    .settings-button {
+      width: 50px;
+      min-height: 50px;
+      border-color: transparent;
+      background: transparent;
+      color: #111418;
+      box-shadow: none;
+      line-height: 1;
+    }
+
+    .primary-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 0 15px;
+      background: var(--accent);
+      color: #fff;
+      border-color: var(--accent);
+      font-weight: 700;
+      box-shadow: 0 9px 20px rgba(47, 111, 159, 0.22);
+    }
+
+    .edit-toggle {
+      width: 50px;
+      min-height: 50px;
+      padding: 0;
+      border-color: transparent;
+      background: transparent;
+      color: #111418;
+      line-height: 1;
+      box-shadow: none;
+    }
+
+    .action-line-icon {
+      width: 38px;
+      height: 38px;
+      overflow: visible;
+      color: currentColor;
+      transition: color 160ms ease, filter 160ms ease, transform 160ms ease;
+    }
+
+    .secondary-button,
+    .ghost-button {
+      padding: 0 14px;
+      background: var(--surface);
+      border-color: var(--line);
+      color: var(--ink);
+      font-weight: 650;
+    }
+
+    .danger-button {
+      padding: 0 14px;
+      background: #fff4f4;
+      border-color: #e7bcbc;
+      color: var(--danger);
+      font-weight: 700;
+    }
+
+    .icon-button:hover,
+    .secondary-button:hover,
+    .ghost-button:hover {
+      background: #f8fafc;
+      border-color: #c5ccd8;
+    }
+
+    .settings-button:hover {
+      background: transparent;
+      border-color: transparent;
+      color: #111418;
+      box-shadow: none;
+    }
+
+    .edit-toggle:hover {
+      background: transparent;
+      border-color: transparent;
+      color: #111418;
+      box-shadow: none;
+    }
+
+    .primary-button:hover {
+      background: var(--accent-strong);
+      border-color: var(--accent-strong);
+    }
+
+    .primary-button.edit-toggle:hover {
+      background: transparent;
+      border-color: transparent;
+      box-shadow: none;
+    }
+
+    .primary-button[aria-pressed="true"] {
+      background: #243847;
+      border-color: #243847;
+      box-shadow: 0 9px 20px rgba(36, 56, 71, 0.2);
+    }
+
+    .edit-toggle[aria-pressed="true"] {
+      background: transparent;
+      border-color: transparent;
+      color: #39ff14;
+      box-shadow: none;
+    }
+
+    .edit-toggle[aria-pressed="true"] .action-line-icon {
+      filter:
+        drop-shadow(0 0 4px rgba(57, 255, 20, 0.95))
+        drop-shadow(0 0 12px rgba(57, 255, 20, 0.72))
+        drop-shadow(0 0 22px rgba(57, 255, 20, 0.48));
+      transform: scale(1.04);
+    }
+
+    .danger-button:hover {
+      background: #ffeaea;
+    }
+
+    .icon-button:active,
+    .primary-button:active,
+    .secondary-button:active,
+    .danger-button:active,
+    .ghost-button:active {
+      transform: translateY(1px);
+    }
+
+    .grid-shell {
+      display: grid;
+      width: max-content;
+      grid-template-columns: minmax(var(--row-title-w), max-content) max-content;
+      grid-template-rows: var(--column-title-h) auto;
+      gap: var(--gap);
+    }
+
+    .corner-cell,
+    .title-cell {
+      border: 1px solid transparent;
+      border-radius: 8px;
+      background: transparent;
+      color: #3f4854;
+      font-size: 0.86rem;
+      font-weight: 750;
+    }
+
+    .corner-cell {
+      grid-column: 1;
+      grid-row: 1;
+    }
+
+    .column-headers {
+      display: grid;
+      grid-column: 2;
+      grid-row: 1;
+      grid-template-columns: repeat(var(--grid-columns), var(--card-w));
+      gap: var(--gap);
+    }
+
+    .row-headers {
+      display: grid;
+      grid-column: 1;
+      grid-row: 2;
+      grid-template-rows: repeat(var(--grid-rows), var(--card-h));
+      gap: var(--gap);
+      min-width: var(--row-title-w);
+      width: max-content;
+    }
+
+    .title-cell {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 0;
+      padding: 0 10px;
+      overflow: hidden;
+      text-align: center;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      transition: background 150ms ease, border-color 150ms ease, box-shadow 150ms ease;
+    }
+
+    .title-cell.is-row-title {
+      min-width: var(--row-title-w);
+      padding: 0 12px;
+      overflow: visible;
+      text-overflow: clip;
+    }
+
+    .title-cell.is-row-title.is-empty {
+      width: var(--row-title-w);
+      padding: 0;
+    }
+
+    .title-cell.is-empty {
+      color: transparent;
+      font-size: 0;
+    }
+
+    .title-cell.is-empty::before {
+      display: grid;
+      width: 26px;
+      height: 26px;
+      place-items: center;
+      border-radius: 8px;
+      color: var(--accent);
+      content: "+";
+      font-size: 1.18rem;
+      font-weight: 850;
+      line-height: 1;
+      opacity: 0;
+      transition: opacity 150ms ease;
+    }
+
+    .title-cell:hover,
+    .title-cell:focus-visible {
+      background: rgba(47, 111, 159, 0.06);
+      border-color: #c4cedb;
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.72);
+      outline: 0;
+    }
+
+    .title-cell.is-empty:hover::before,
+    .title-cell.is-empty:focus-visible::before {
+      opacity: 1;
+    }
+
+    .grid-shell:not(.is-edit-mode) .title-cell {
+      pointer-events: none;
+    }
+
+    .grid-shell:not(.is-edit-mode) .title-cell:hover,
+    .grid-shell:not(.is-edit-mode) .title-cell:focus-visible {
+      background: transparent;
+      border-color: transparent;
+      box-shadow: none;
+    }
+
+    .grid-shell:not(.is-edit-mode) .title-cell.is-empty::before {
+      opacity: 0;
+    }
+
+    .board {
+      position: relative;
+      display: grid;
+      grid-column: 2;
+      grid-row: 2;
+      grid-template-columns: repeat(var(--grid-columns), var(--card-w));
+      grid-template-rows: repeat(var(--grid-rows), var(--card-h));
+      grid-auto-rows: var(--card-h);
+      gap: var(--gap);
+      align-items: stretch;
+      width: max-content;
+      min-height: var(--card-h);
+      border-radius: 8px;
+      transition: background-color 150ms ease;
+      touch-action: pan-y;
+    }
+
+    .board.is-dragging {
+      background-color: rgba(47, 111, 159, 0.045);
+      background-image:
+        linear-gradient(to right, rgba(47, 111, 159, 0.2) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(47, 111, 159, 0.2) 1px, transparent 1px);
+      background-size: var(--cell-w) var(--cell-h);
+      background-position: 0 0;
+    }
+
+    .empty-slot {
+      display: grid;
+      width: var(--card-w);
+      height: var(--card-h);
+      place-items: center;
+      border: 1px solid transparent;
+      border-radius: 8px;
+      background: transparent;
+      transition: background 150ms ease, border-color 150ms ease, box-shadow 150ms ease;
+    }
+
+    .empty-slot::before {
+      display: grid;
+      width: 30px;
+      height: 30px;
+      place-items: center;
+      border-radius: 8px;
+      color: var(--accent);
+      content: "+";
+      font-size: 1.28rem;
+      font-weight: 850;
+      line-height: 1;
+      opacity: 0;
+      transition: opacity 150ms ease;
+    }
+
+    .empty-slot:hover,
+    .empty-slot:focus-visible {
+      background: rgba(47, 111, 159, 0.06);
+      border-color: #c4cedb;
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.72);
+      outline: 0;
+    }
+
+    .empty-slot:hover::before,
+    .empty-slot:focus-visible::before {
+      opacity: 1;
+    }
+
+    .grid-shell:not(.is-edit-mode) .empty-slot {
+      pointer-events: none;
+    }
+
+    .grid-shell:not(.is-edit-mode) .empty-slot:hover,
+    .grid-shell:not(.is-edit-mode) .empty-slot:focus-visible {
+      background: transparent;
+      border-color: transparent;
+      box-shadow: none;
+    }
+
+    .grid-shell:not(.is-edit-mode) .empty-slot::before {
+      opacity: 0;
+    }
+
+    .board.is-dragging .empty-slot {
+      pointer-events: none;
+    }
+
+    .card {
+      position: relative;
+      display: grid;
+      width: var(--card-w);
+      height: var(--card-h);
+      place-items: center;
+      align-content: center;
+      gap: 6px;
+      overflow: visible;
+      padding: 8px;
+      border: 1px solid transparent;
+      border-radius: 8px;
+      background: transparent;
+      box-shadow: none;
+      cursor: grab;
+      text-align: center;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    .card.has-url {
+      cursor: grab;
+    }
+
+    .card:hover,
+    .card:focus-visible {
+      background: rgba(47, 111, 159, 0.06);
+      border-color: #c4cedb;
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.72);
+      outline: 0;
+    }
+
+    .card.is-hidden-during-drag {
+      display: none;
+    }
+
+    .card-icon {
+      display: grid;
+      width: 40px;
+      height: 40px;
+      place-items: center;
+      overflow: hidden;
+      border-radius: 50%;
+      background: #eef2f7;
+      color: var(--accent);
+      font-size: 1.1rem;
+      font-weight: 850;
+      box-shadow: inset 0 0 0 1px rgba(37, 48, 64, 0.08);
+    }
+
+    .card-icon-img {
+      width: 24px;
+      height: 24px;
+      object-fit: contain;
+    }
+
+    .card-icon.is-fallback {
+      background: var(--fallback-bg, #e8f0f4);
+      color: var(--fallback-fg, var(--accent));
+    }
+
+    .card-name {
+      width: 100%;
+      color: var(--ink);
+      font-size: 0.82rem;
+      font-weight: 650;
+      line-height: 1.18;
+      overflow: hidden;
+      display: -webkit-box;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 2;
+      text-overflow: ellipsis;
+      white-space: normal;
+      overflow-wrap: anywhere;
+    }
+
+    .card[data-tooltip]:hover::after,
+    .card[data-tooltip]:focus-visible::after,
+    .card[data-tooltip]:focus-within::after {
+      position: absolute;
+      bottom: calc(100% + 8px);
+      left: 50%;
+      z-index: 8;
+      width: max-content;
+      max-width: 320px;
+      padding: 8px 10px;
+      border-radius: 8px;
+      background: #20242a;
+      color: #fff;
+      content: attr(data-tooltip);
+      font-size: 0.82rem;
+      font-weight: 600;
+      line-height: 1.35;
+      pointer-events: none;
+      transform: translateX(-50%);
+      overflow-wrap: anywhere;
+      white-space: normal;
+    }
+
+    .card[data-tooltip]:hover::before,
+    .card[data-tooltip]:focus-visible::before,
+    .card[data-tooltip]:focus-within::before {
+      position: absolute;
+      bottom: calc(100% + 3px);
+      left: 50%;
+      z-index: 9;
+      width: 10px;
+      height: 10px;
+      background: #20242a;
+      content: "";
+      pointer-events: none;
+      transform: translateX(-50%) rotate(45deg);
+    }
+
+    .card-menu-button {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      z-index: 2;
+      display: grid;
+      width: 30px;
+      height: 30px;
+      place-items: center;
+      border: 1px solid transparent;
+      border-radius: 8px;
+      background: transparent;
+      color: #5b6570;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 150ms ease, background 150ms ease, border-color 150ms ease;
+    }
+
+    .card:hover .card-menu-button,
+    .card:focus-visible .card-menu-button,
+    .card:focus-within .card-menu-button,
+    .card-menu-button[aria-expanded="true"] {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .card-menu-button:hover,
+    .card-menu-button[aria-expanded="true"] {
+      background: #eef2f7;
+      border-color: #d5dce6;
+    }
+
+    .card-menu {
+      position: absolute;
+      top: 40px;
+      right: 8px;
+      z-index: 4;
+      display: grid;
+      min-width: 104px;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      box-shadow: var(--shadow);
+    }
+
+    .card-menu[hidden] {
+      display: none;
+    }
+
+    .menu-item {
+      min-height: 30px;
+      padding: 0 10px;
+      border: 0;
+      background: transparent;
+      color: var(--ink);
+      font-size: 0.78rem;
+      font-weight: 650;
+      text-align: left;
+    }
+
+    .menu-item:hover {
+      background: #f2f5f8;
+    }
+
+    .menu-item.is-danger {
+      color: var(--danger);
+    }
+
+    .drop-marker {
+      width: var(--card-w);
+      height: var(--card-h);
+      border: 2px solid var(--accent);
+      border-radius: 8px;
+      background: rgba(47, 111, 159, 0.08);
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.85);
+    }
+
+    .drag-ghost {
+      position: fixed;
+      z-index: 30;
+      pointer-events: none;
+      opacity: 0.92;
+      transform: rotate(1deg);
+      box-shadow: 0 18px 36px rgba(22, 31, 44, 0.22);
+    }
+
+    body.dragging-card {
+      cursor: grabbing;
+    }
+
+    body.dragging-card .card {
+      cursor: grabbing;
+    }
+
+    dialog {
+      width: min(430px, calc(100vw - 28px));
+      padding: 0;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--surface);
+      color: var(--ink);
+      box-shadow: var(--shadow);
+    }
+
+    dialog::backdrop {
+      background: rgba(25, 30, 38, 0.36);
+    }
+
+    .dialog-body {
+      padding: 22px;
+    }
+
+    dialog.settings-dialog {
+      width: min(520px, calc(100vw - 28px));
+    }
+
+    .settings-form {
+      padding: 0;
+    }
+
+    .settings-dialog .dialog-header {
+      margin: 0;
+      padding: 20px 22px 16px;
+      border-bottom: 1px solid #edf1f6;
+    }
+
+    .settings-dialog .dialog-title {
+      font-size: 1.06rem;
+    }
+
+    .settings-content {
+      display: grid;
+      gap: 18px;
+      padding: 18px 22px 0;
+    }
+
+    .settings-section {
+      display: grid;
+      gap: 12px;
+      padding-top: 18px;
+      border-top: 1px solid #edf1f6;
+    }
+
+    .settings-section:first-child {
+      padding-top: 0;
+      border-top: 0;
+    }
+
+    .settings-section-title {
+      margin: 0;
+      color: #202733;
+      font-size: 0.92rem;
+      font-weight: 750;
+      line-height: 1.2;
+      letter-spacing: 0;
+    }
+
+    .dialog-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      margin-bottom: 18px;
+    }
+
+    .dialog-title {
+      margin: 0;
+      font-size: 1.12rem;
+      line-height: 1.2;
+      letter-spacing: 0;
+    }
+
+    .field-stack {
+      display: grid;
+      gap: 14px;
+    }
+
+    .field {
+      display: grid;
+      gap: 7px;
+    }
+
+    .grid-settings {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .settings-transfer-actions {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .settings-dialog .field {
+      gap: 8px;
+    }
+
+    .settings-dialog .field label {
+      color: #667080;
+      font-size: 0.78rem;
+      font-weight: 750;
+    }
+
+    .settings-dialog .grid-settings {
+      gap: 10px;
+    }
+
+    .settings-radio-stack {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+      padding: 0;
+    }
+
+    .settings-dialog .radio-row {
+      min-height: 40px;
+      padding: 0 12px;
+      border: 1px solid #d8dee8;
+      border-radius: 8px;
+      background: #fff;
+      font-weight: 650;
+    }
+
+    .settings-dialog .radio-row:has(input:checked) {
+      border-color: #8baac4;
+      background: #f4f8fb;
+      color: #1f3c51;
+    }
+
+    .settings-transfer-actions .secondary-button {
+      width: 100%;
+      min-height: 40px;
+    }
+
+    .settings-dialog .error-text {
+      min-height: 16px;
+      margin-top: -2px;
+      font-size: 0.8rem;
+    }
+
+    .field label,
+    .check-row,
+    .radio-row {
+      color: #303741;
+      font-size: 0.92rem;
+      font-weight: 700;
+    }
+
+    input[type="text"],
+    input[type="number"],
+    textarea {
+      width: 100%;
+      border: 1px solid #cbd2dd;
+      border-radius: 8px;
+      background: #fff;
+      color: var(--ink);
+      outline: 0;
+    }
+
+    input[type="text"],
+    input[type="number"] {
+      height: 40px;
+      padding: 0 11px;
+    }
+
+    textarea {
+      min-height: 78px;
+      resize: vertical;
+      padding: 10px 11px;
+    }
+
+    input[type="text"]:focus,
+    input[type="number"]:focus,
+    textarea:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(47, 111, 159, 0.14);
+    }
+
+    .check-row,
+    .radio-row {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      line-height: 1.3;
+    }
+
+    .radio-stack {
+      display: grid;
+      gap: 10px;
+      padding: 4px 0;
+    }
+
+    .error-text {
+      min-height: 18px;
+      color: var(--danger);
+      font-size: 0.86rem;
+      font-weight: 700;
+    }
+
+    .dialog-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      margin-top: 20px;
+    }
+
+    .settings-actions {
+      margin-top: 18px;
+      padding: 18px 22px 22px;
+      border-top: 1px solid #edf1f6;
+    }
+
+    .settings-actions .primary-button {
+      min-width: 86px;
+    }
+
+    @media (max-width: 560px) {
+      .shell {
+        padding-top: 20px;
+      }
+
+      .topbar {
+        align-items: flex-start;
+      }
+
+      .brand-mark {
+        width: 34px;
+        height: 34px;
+      }
+
+      .primary-button {
+        padding: 0 12px;
+      }
+
+      .grid-settings {
+        grid-template-columns: 1fr;
+      }
+
+      .settings-radio-stack,
+      .settings-transfer-actions {
+        grid-template-columns: 1fr;
+      }
+
+      .settings-dialog .dialog-header,
+      .settings-content,
+      .settings-actions {
+        padding-left: 18px;
+        padding-right: 18px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <header class="topbar">
+      <div class="brand" aria-label="Start">
+        <div class="brand-mark" aria-hidden="true">S</div>
+        <h1>Start</h1>
+      </div>
+      <div class="actions">
+        <button class="icon-button settings-button" id="settingsButton" type="button" aria-label="설정" title="설정">
+          <svg class="action-line-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12.22 2H11.78C10.72 2 9.86 2.86 9.86 3.92V4.1C9.86 4.85 9.45 5.55 8.8 5.92L8.36 6.17C7.71 6.55 6.9 6.55 6.25 6.17L6.1 6.09C5.18 5.56 4 5.87 3.47 6.79L3.25 7.18C2.72 8.1 3.03 9.28 3.95 9.81L4.1 9.9C4.75 10.28 5.16 10.97 5.16 11.72V12.28C5.16 13.03 4.75 13.72 4.1 14.1L3.95 14.19C3.03 14.72 2.72 15.9 3.25 16.82L3.47 17.21C4 18.13 5.18 18.44 6.1 17.91L6.25 17.83C6.9 17.45 7.71 17.45 8.36 17.83L8.8 18.08C9.45 18.45 9.86 19.15 9.86 19.9V20.08C9.86 21.14 10.72 22 11.78 22H12.22C13.28 22 14.14 21.14 14.14 20.08V19.9C14.14 19.15 14.55 18.45 15.2 18.08L15.64 17.83C16.29 17.45 17.1 17.45 17.75 17.83L17.9 17.91C18.82 18.44 20 18.13 20.53 17.21L20.75 16.82C21.28 15.9 20.97 14.72 20.05 14.19L19.9 14.1C19.25 13.72 18.84 13.03 18.84 12.28V11.72C18.84 10.97 19.25 10.28 19.9 9.9L20.05 9.81C20.97 9.28 21.28 8.1 20.75 7.18L20.53 6.79C20 5.87 18.82 5.56 17.9 6.09L17.75 6.17C17.1 6.55 16.29 6.55 15.64 6.17L15.2 5.92C14.55 5.55 14.14 4.85 14.14 4.1V3.92C14.14 2.86 13.28 2 12.22 2Z" stroke-width="2.5"/>
+            <circle cx="12" cy="12" r="3" stroke-width="2.5"/>
+          </svg>
+        </button>
+        <button class="primary-button edit-toggle" id="addButton" type="button" aria-label="편집 모드 켜기" title="편집 모드 켜기" aria-pressed="false">
+          <svg class="action-line-icon" aria-hidden="true" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M14 18H35" stroke-width="6.5"/>
+            <path d="M14 18V50H46" stroke-width="6.5"/>
+            <path d="M50 34V50" stroke-width="6.5"/>
+            <path d="M24 42L27 29L46 10C49 7 54 8 56 12C58 15 57 19 54 22L35 40L24 42Z" stroke-width="6.5"/>
+            <path d="M44 13L53 22" stroke-width="6.5"/>
+          </svg>
+        </button>
+      </div>
+    </header>
+
+    <section class="grid-shell" id="gridShell" aria-label="시작페이지 그리드">
+      <div class="corner-cell" aria-hidden="true"></div>
+      <div class="column-headers" id="columnHeaders" aria-label="열 타이틀"></div>
+      <div class="row-headers" id="rowHeaders" aria-label="행 타이틀"></div>
+      <section class="board" id="board" aria-label="시작페이지 카드"></section>
+    </section>
+  </main>
+
+  <dialog id="cardDialog">
+    <form class="dialog-body" id="cardForm" method="dialog">
+      <div class="dialog-header">
+        <h2 class="dialog-title" id="cardDialogTitle">카드 추가</h2>
+        <button class="icon-button" id="cardCloseButton" type="button" aria-label="닫기" title="닫기">×</button>
+      </div>
+      <div class="field-stack">
+        <div class="field">
+          <label for="cardName">타이틀</label>
+          <input id="cardName" name="name" type="text" maxlength="80" autocomplete="off" required>
+        </div>
+        <div class="field">
+          <label for="cardDescription">설명</label>
+          <textarea id="cardDescription" name="description" maxlength="180"></textarea>
+        </div>
+        <div class="field">
+          <label for="cardUrl">주소</label>
+          <input id="cardUrl" name="url" type="text" inputmode="url" autocomplete="off" placeholder="https://example.com">
+        </div>
+      </div>
+      <div class="error-text" id="cardError" role="alert"></div>
+      <div class="dialog-actions">
+        <button class="secondary-button" id="cardCancelButton" type="button">취소</button>
+        <button class="primary-button" id="cardSubmitButton" type="submit">추가</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog class="settings-dialog" id="settingsDialog">
+    <form class="dialog-body settings-form" id="settingsForm" method="dialog">
+      <div class="dialog-header">
+        <h2 class="dialog-title">설정</h2>
+        <button class="icon-button" id="settingsCloseButton" type="button" aria-label="닫기" title="닫기">×</button>
+      </div>
+      <div class="settings-content">
+        <section class="settings-section">
+          <h3 class="settings-section-title">링크 열기</h3>
+          <div class="radio-stack settings-radio-stack">
+            <label class="radio-row">
+              <input type="radio" name="openMode" value="current">
+              <span>현재 탭</span>
+            </label>
+            <label class="radio-row">
+              <input type="radio" name="openMode" value="new">
+              <span>새 탭</span>
+            </label>
+          </div>
+        </section>
+        <section class="settings-section">
+          <h3 class="settings-section-title">그리드</h3>
+          <div class="grid-settings">
+            <div class="field">
+              <label for="gridColumns">열</label>
+              <input id="gridColumns" name="gridColumns" type="number" min="1" max="12" step="1" inputmode="numeric">
+            </div>
+            <div class="field">
+              <label for="gridRows">행</label>
+              <input id="gridRows" name="gridRows" type="number" min="1" max="12" step="1" inputmode="numeric">
+            </div>
+          </div>
+        </section>
+        <section class="settings-section">
+          <h3 class="settings-section-title">구성 JSON</h3>
+          <div class="settings-transfer-actions">
+            <button class="secondary-button" id="exportConfigButton" type="button">내보내기</button>
+            <button class="secondary-button" id="importConfigButton" type="button">가져오기</button>
+          </div>
+          <input id="importConfigFile" type="file" accept="application/json,.json" hidden>
+          <div class="error-text" id="settingsImportError" role="alert"></div>
+        </section>
+      </div>
+      <div class="dialog-actions settings-actions">
+        <button class="primary-button" type="submit">저장</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog id="titleDialog">
+    <form class="dialog-body" id="titleForm" method="dialog">
+      <div class="dialog-header">
+        <h2 class="dialog-title" id="titleDialogTitle">타이틀 편집</h2>
+        <button class="icon-button" id="titleCloseButton" type="button" aria-label="닫기" title="닫기">×</button>
+      </div>
+      <div class="field">
+        <label for="titleText">텍스트</label>
+        <input id="titleText" name="titleText" type="text" maxlength="80" autocomplete="off">
+      </div>
+      <div class="dialog-actions">
+        <button class="secondary-button" id="titleCancelButton" type="button">취소</button>
+        <button class="primary-button" type="submit">저장</button>
+      </div>
+    </form>
+  </dialog>
+
+  <script>
+    (() => {
+      "use strict";
+
+      const STORAGE_KEY = "startpage:v1";
+      const LONG_PRESS_MS = 360;
+      const MOVE_TOLERANCE = 8;
+
+      const gridShell = document.getElementById("gridShell");
+      const columnHeaders = document.getElementById("columnHeaders");
+      const rowHeaders = document.getElementById("rowHeaders");
+      const board = document.getElementById("board");
+      const addButton = document.getElementById("addButton");
+      const settingsButton = document.getElementById("settingsButton");
+      const cardDialog = document.getElementById("cardDialog");
+      const cardForm = document.getElementById("cardForm");
+      const cardDialogTitle = document.getElementById("cardDialogTitle");
+      const cardName = document.getElementById("cardName");
+      const cardDescription = document.getElementById("cardDescription");
+      const cardUrl = document.getElementById("cardUrl");
+      const cardError = document.getElementById("cardError");
+      const cardSubmitButton = document.getElementById("cardSubmitButton");
+      const cardCancelButton = document.getElementById("cardCancelButton");
+      const cardCloseButton = document.getElementById("cardCloseButton");
+      const settingsDialog = document.getElementById("settingsDialog");
+      const settingsForm = document.getElementById("settingsForm");
+      const settingsCloseButton = document.getElementById("settingsCloseButton");
+      const gridColumns = document.getElementById("gridColumns");
+      const gridRows = document.getElementById("gridRows");
+      const exportConfigButton = document.getElementById("exportConfigButton");
+      const importConfigButton = document.getElementById("importConfigButton");
+      const importConfigFile = document.getElementById("importConfigFile");
+      const settingsImportError = document.getElementById("settingsImportError");
+      const titleDialog = document.getElementById("titleDialog");
+      const titleForm = document.getElementById("titleForm");
+      const titleDialogTitle = document.getElementById("titleDialogTitle");
+      const titleText = document.getElementById("titleText");
+      const titleCancelButton = document.getElementById("titleCancelButton");
+      const titleCloseButton = document.getElementById("titleCloseButton");
+
+      let state = loadState();
+      let editingId = null;
+      let pendingCardSlot = null;
+      let editingTitle = null;
+      let openMenuId = null;
+      let pressState = null;
+      let dragState = null;
+      let suppressCardClickUntil = 0;
+      let isEditMode = false;
+
+      function getDefaultState() {
+        return {
+          cards: [],
+          settings: { openMode: "current", gridColumns: 5, gridRows: 5 },
+          rowTitles: [],
+          columnTitles: []
+        };
+      }
+
+      function unwrapStatePayload(value) {
+        if (!value || typeof value !== "object") return null;
+        if (value.data && typeof value.data === "object") return value.data;
+        if (value.state && typeof value.state === "object") return value.state;
+        if (value.config && typeof value.config === "object") return value.config;
+        return value;
+      }
+
+      function normalizeState(rawState) {
+        const saved = unwrapStatePayload(rawState);
+        if (!saved) return null;
+
+        const cards = Array.isArray(saved.cards)
+          ? saved.cards
+            .filter((card) => card && typeof card.name === "string")
+            .map((card, index) => ({
+              id: typeof card.id === "string" ? card.id : createId(),
+              name: card.name.trim().slice(0, 80),
+              description: typeof card.description === "string" ? card.description.slice(0, 180) : "",
+              url: typeof card.url === "string" ? card.url : "",
+              slot: normalizeSlot(card.slot, index)
+            }))
+            .filter((card) => card.name)
+          : [];
+
+        return {
+          cards: normalizeCards(cards),
+          settings: {
+            openMode: saved.settings && saved.settings.openMode === "new" ? "new" : "current",
+            gridColumns: clampGridSize(saved.settings && saved.settings.gridColumns, 5),
+            gridRows: clampGridSize(saved.settings && saved.settings.gridRows, 5)
+          },
+          rowTitles: normalizeTitles(saved.rowTitles),
+          columnTitles: normalizeTitles(saved.columnTitles)
+        };
+      }
+
+      function loadState() {
+        try {
+          const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || "null");
+          return normalizeState(saved) || getDefaultState();
+        } catch {
+          return getDefaultState();
+        }
+      }
+
+      function saveState() {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      }
+
+      function createId() {
+        return `card-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`;
+      }
+
+      function clampGridSize(value, fallback) {
+        const number = Number.parseInt(value, 10);
+        if (!Number.isFinite(number)) return fallback;
+        return Math.max(1, Math.min(12, number));
+      }
+
+      function normalizeSlot(value, fallback) {
+        return Number.isInteger(value) && value >= 0 ? value : fallback;
+      }
+
+      function normalizeCards(cards) {
+        const usedSlots = new Set();
+
+        return cards
+          .map((card, index) => {
+            let slot = normalizeSlot(card.slot, index);
+            while (usedSlots.has(slot)) slot += 1;
+            usedSlots.add(slot);
+            return { ...card, slot };
+          })
+          .sort((left, right) => left.slot - right.slot);
+      }
+
+      function preserveCardCoordinates(oldColumns, nextColumns) {
+        if (oldColumns === nextColumns) return;
+
+        state.cards = state.cards.map((card, index) => {
+          const slot = normalizeSlot(card.slot, index);
+          const row = Math.floor(slot / oldColumns);
+          const column = slot % oldColumns;
+
+          return {
+            ...card,
+            slot: (row * nextColumns) + Math.min(column, nextColumns - 1)
+          };
+        });
+      }
+
+      function normalizeTitles(titles) {
+        if (!Array.isArray(titles)) return [];
+        return Array.from({ length: titles.length }, (_, index) => (
+          typeof titles[index] === "string" ? titles[index].slice(0, 80) : ""
+        ));
+      }
+
+      function getNextOpenSlot(preferredSlot = null) {
+        const usedSlots = new Set(state.cards.map((card, index) => normalizeSlot(card.slot, index)));
+        if (Number.isInteger(preferredSlot) && preferredSlot >= 0 && !usedSlots.has(preferredSlot)) {
+          return preferredSlot;
+        }
+
+        let slot = 0;
+        while (usedSlots.has(slot)) slot += 1;
+        return slot;
+      }
+
+      function getGridSlotCount() {
+        return clampGridSize(state.settings.gridColumns, 5) * clampGridSize(state.settings.gridRows, 5);
+      }
+
+      function placeElementAtSlot(element, slot) {
+        const columns = getColumnCount();
+        element.style.gridColumn = String((slot % columns) + 1);
+        element.style.gridRow = String(Math.floor(slot / columns) + 1);
+      }
+
+      function applyBoardSettings() {
+        gridShell.style.setProperty("--grid-columns", String(clampGridSize(state.settings.gridColumns, 5)));
+        gridShell.style.setProperty("--grid-rows", String(clampGridSize(state.settings.gridRows, 5)));
+      }
+
+      function escapeText(value) {
+        return value.replace(/[&<>"']/g, (char) => ({
+          "&": "&amp;",
+          "<": "&lt;",
+          ">": "&gt;",
+          '"': "&quot;",
+          "'": "&#039;"
+        }[char]));
+      }
+
+      function normalizeUrl(rawUrl) {
+        const value = rawUrl.trim();
+        if (!value) return "";
+
+        const withProtocol = /^[a-z][a-z0-9+.-]*:\/\//i.test(value) ? value : `https://${value}`;
+        const parsed = new URL(withProtocol);
+        if (!["http:", "https:"].includes(parsed.protocol)) {
+          throw new Error("unsupported-protocol");
+        }
+        return parsed.href;
+      }
+
+      function render() {
+        applyBoardSettings();
+        updateEditModeUI();
+        renderTitles();
+        board.textContent = "";
+
+        state.cards = normalizeCards(state.cards);
+        renderEmptySlots();
+
+        state.cards.forEach((card, index) => {
+          board.append(createCardElement(card, index));
+        });
+      }
+
+      function renderEmptySlots() {
+        const occupiedSlots = new Set(state.cards.map((card, index) => normalizeSlot(card.slot, index)));
+
+        for (let slot = 0; slot < getGridSlotCount(); slot += 1) {
+          if (occupiedSlots.has(slot)) continue;
+          board.append(createEmptySlotElement(slot));
+        }
+      }
+
+      function renderTitles() {
+        const columns = clampGridSize(state.settings.gridColumns, 5);
+        const rows = clampGridSize(state.settings.gridRows, 5);
+
+        columnHeaders.textContent = "";
+        rowHeaders.textContent = "";
+
+        for (let index = 0; index < columns; index += 1) {
+          columnHeaders.append(createTitleCell("column", index));
+        }
+
+        for (let index = 0; index < rows; index += 1) {
+          rowHeaders.append(createTitleCell("row", index));
+        }
+      }
+
+      function createTitleCell(axis, index) {
+        const title = axis === "row" ? state.rowTitles[index] || "" : state.columnTitles[index] || "";
+        const button = document.createElement("button");
+        button.className = [
+          "title-cell",
+          axis === "row" ? "is-row-title" : "is-column-title",
+          title ? "" : "is-empty"
+        ].filter(Boolean).join(" ");
+        button.type = "button";
+        button.dataset.axis = axis;
+        button.dataset.index = String(index);
+        if (!isEditMode) {
+          button.tabIndex = -1;
+        }
+        button.setAttribute("aria-label", title || (axis === "row" ? `행 ${index + 1} 타이틀 추가` : `열 ${index + 1} 타이틀 추가`));
+        button.textContent = title || (axis === "row" ? `행 ${index + 1}` : `열 ${index + 1}`);
+        return button;
+      }
+
+      function createEmptySlotElement(slot) {
+        const button = document.createElement("button");
+        button.className = "empty-slot";
+        button.type = "button";
+        button.dataset.slot = String(slot);
+        if (!isEditMode) {
+          button.tabIndex = -1;
+        }
+        button.setAttribute("aria-label", `${slot + 1}번 칸에 카드 추가`);
+        placeElementAtSlot(button, slot);
+        return button;
+      }
+
+      function toggleEditMode() {
+        isEditMode = !isEditMode;
+        if (!isEditMode) {
+          openMenuId = null;
+        }
+        updateEditModeUI();
+        render();
+      }
+
+      function updateEditModeUI() {
+        gridShell.classList.toggle("is-edit-mode", isEditMode);
+        addButton.setAttribute("aria-pressed", String(isEditMode));
+        addButton.setAttribute("aria-label", isEditMode ? "편집 모드 끄기" : "편집 모드 켜기");
+        addButton.title = isEditMode ? "편집 모드 끄기" : "편집 모드 켜기";
+        board.querySelectorAll(".empty-slot").forEach((slot) => {
+          slot.tabIndex = isEditMode ? 0 : -1;
+        });
+        gridShell.querySelectorAll(".title-cell").forEach((cell) => {
+          cell.tabIndex = isEditMode ? 0 : -1;
+        });
+      }
+
+      function getCardInitial(name) {
+        return (name.trim()[0] || "?").toUpperCase();
+      }
+
+      function hashString(value) {
+        let hash = 0;
+        for (let index = 0; index < value.length; index += 1) {
+          hash = ((hash << 5) - hash + value.charCodeAt(index)) >>> 0;
+        }
+        return hash;
+      }
+
+      function getFallbackIconPalette(name, url = "") {
+        const palettes = [
+          { background: "#e8f1ff", color: "#1d4ed8" },
+          { background: "#e9f8ef", color: "#047857" },
+          { background: "#fff1e7", color: "#c2410c" },
+          { background: "#f1ebff", color: "#6d28d9" },
+          { background: "#ffeaf0", color: "#be123c" },
+          { background: "#e7f7fb", color: "#0e7490" },
+          { background: "#fff7d6", color: "#a16207" },
+          { background: "#eef2ff", color: "#4338ca" }
+        ];
+        return palettes[hashString(`${name}|${url}`) % palettes.length];
+      }
+
+      function isLocalHostname(hostname) {
+        const normalizedHostname = hostname.replace(/^\[|\]$/g, "").replace(/^www\./i, "").toLowerCase();
+        return normalizedHostname === "localhost"
+          || normalizedHostname === "::1"
+          || normalizedHostname === "127.0.0.1"
+          || normalizedHostname.endsWith(".localhost");
+      }
+
+      function shouldUseGeneratedIconOnly(url) {
+        const normalizedHostname = url.hostname.replace(/^www\./i, "").toLowerCase();
+        const noFaviconHostnames = new Set([
+          "backoffice.officeagent.kr"
+        ]);
+
+        return noFaviconHostnames.has(normalizedHostname) || isLocalHostname(normalizedHostname);
+      }
+
+      function isSwaggerDocsUrl(url) {
+        const normalizedHostname = url.hostname.replace(/^www\./i, "");
+        const normalizedPath = url.pathname.replace(/\/+$/g, "");
+        const swaggerDocsPaths = new Set([
+          "/docs",
+          "/api/v1/docs"
+        ]);
+
+        return normalizedHostname.endsWith("officeagent.kr") && swaggerDocsPaths.has(normalizedPath);
+      }
+
+      function getKnownFaviconCandidates(url) {
+        if (isSwaggerDocsUrl(url)) {
+          return ["https://fastapi.tiangolo.com/img/favicon.png"];
+        }
+
+        const { hostname, origin } = url;
+        const normalizedHostname = hostname.replace(/^www\./i, "");
+        const officeAgentIcon = "https://app.officeagent.kr/favicons/icon-prod.svg";
+        const knownCandidates = {
+          "app.officeagent.kr": [`${origin}/favicons/icon-prod.svg`],
+          "dev-knowledge-hub.officeagent.kr": [officeAgentIcon],
+          "staging-knowledge-hub.officeagent.kr": [officeAgentIcon],
+          "knowledge-hub.officeagent.kr": [officeAgentIcon],
+          "officeagent.kr": [officeAgentIcon]
+        };
+
+        if (knownCandidates[hostname]) return knownCandidates[hostname];
+        if (knownCandidates[normalizedHostname]) return knownCandidates[normalizedHostname];
+        return [];
+      }
+
+      function getFaviconCandidates(url) {
+        if (!url) return [];
+
+        try {
+          const parsedUrl = new URL(url);
+          if (shouldUseGeneratedIconOnly(parsedUrl)) return [];
+
+          const { hostname, origin } = parsedUrl;
+          const rootDomain = hostname.replace(/^www\./i, "");
+          const knownIconCandidates = getKnownFaviconCandidates(parsedUrl);
+          if (knownIconCandidates.length && rootDomain.endsWith("officeagent.kr")) {
+            return [...new Set(knownIconCandidates)];
+          }
+          const candidates = [
+            ...knownIconCandidates,
+            `${origin}/favicon.ico`,
+            `${origin}/favicon.svg`,
+            `${origin}/favicon.png`,
+            `${origin}/favicon-32x32.png`,
+            `${origin}/favicon-16x16.png`,
+            `${origin}/apple-touch-icon.png`,
+            `${origin}/apple-touch-icon-precomposed.png`,
+            `${origin}/favicons/icon.svg`,
+            `${origin}/favicons/icon-prod.svg`,
+            `${origin}/favicons/favicon.svg`,
+            `${origin}/favicons/favicon.ico`,
+            `${origin}/favicons/favicon-32x32.png`,
+            `${origin}/favicons/apple-touch-icon.png`,
+            `${origin}/assets/favicon.ico`,
+            `${origin}/assets/favicon.svg`,
+            `https://icons.duckduckgo.com/ip3/${hostname}.ico`,
+            `https://www.google.com/s2/favicons?domain_url=${encodeURIComponent(origin)}&sz=64`,
+            `https://www.google.com/s2/favicons?domain=${encodeURIComponent(rootDomain)}&sz=64`
+          ];
+
+          return [...new Set(candidates)];
+        } catch {
+          return [];
+        }
+      }
+
+      function applyFallbackIconStyle(icon, name, url = "") {
+        const palette = getFallbackIconPalette(name, url);
+        icon.style.setProperty("--fallback-bg", palette.background);
+        icon.style.setProperty("--fallback-fg", palette.color);
+      }
+
+      function showFallbackIcon(icon, name, url = "") {
+        icon.classList.add("is-fallback");
+        icon.textContent = "";
+        applyFallbackIconStyle(icon, name, url);
+        const initial = document.createElement("span");
+        initial.textContent = getCardInitial(name);
+        icon.append(initial);
+      }
+
+      function connectFaviconFallback(image, icon, candidates, name, url = "") {
+        let candidateIndex = 0;
+
+        image.addEventListener("error", () => {
+          candidateIndex += 1;
+
+          if (candidateIndex < candidates.length) {
+            image.src = candidates[candidateIndex];
+            return;
+          }
+
+          showFallbackIcon(icon, name, url);
+        });
+      }
+
+      function createCardElement(card, index) {
+        const article = document.createElement("article");
+        article.className = [
+          "card",
+          card.url ? "has-url" : ""
+        ].filter(Boolean).join(" ");
+        article.dataset.id = card.id;
+        article.dataset.slot = String(normalizeSlot(card.slot, index));
+        const tooltip = card.description || card.url;
+        if (tooltip) {
+          article.dataset.tooltip = tooltip;
+        }
+        placeElementAtSlot(article, normalizeSlot(card.slot, index));
+        if (card.url) {
+          article.tabIndex = 0;
+          article.setAttribute("role", "link");
+        }
+
+        const faviconCandidates = getFaviconCandidates(card.url);
+        const hasFaviconCandidates = faviconCandidates.length > 0;
+        const fallbackInitial = escapeText(getCardInitial(card.name));
+        article.innerHTML = `
+          <div class="card-icon ${hasFaviconCandidates ? "" : "is-fallback"}" aria-hidden="true">
+            ${hasFaviconCandidates ? `<img class="card-icon-img" src="${escapeText(faviconCandidates[0])}" alt="" decoding="async" loading="lazy" referrerpolicy="no-referrer">` : `<span>${fallbackInitial}</span>`}
+          </div>
+          <div class="card-name">${escapeText(card.name)}</div>
+          <button class="card-menu-button" type="button" aria-label="카드 메뉴" aria-expanded="${openMenuId === card.id ? "true" : "false"}">⋯</button>
+          <div class="card-menu" ${openMenuId === card.id ? "" : "hidden"}>
+            <button class="menu-item" type="button" data-action="edit">수정</button>
+            <button class="menu-item is-danger" type="button" data-action="delete">삭제</button>
+          </div>
+        `;
+
+        const icon = article.querySelector(".card-icon");
+        const image = article.querySelector(".card-icon-img");
+        if (image) {
+          connectFaviconFallback(image, icon, faviconCandidates, card.name, card.url);
+        } else {
+          applyFallbackIconStyle(icon, card.name, card.url);
+        }
+
+        return article;
+      }
+
+      function openCardDialog(card = null, slot = null) {
+        editingId = card ? card.id : null;
+        pendingCardSlot = card ? null : slot;
+        cardDialogTitle.textContent = card ? "카드 수정" : "카드 추가";
+        cardSubmitButton.textContent = card ? "저장" : "추가";
+        cardName.value = card ? card.name : "";
+        cardDescription.value = card ? card.description : "";
+        cardUrl.value = card ? card.url : "";
+        cardError.textContent = "";
+        cardDialog.showModal();
+        requestAnimationFrame(() => cardName.focus());
+      }
+
+      function closeCardDialog() {
+        cardDialog.close();
+        editingId = null;
+        pendingCardSlot = null;
+        cardForm.reset();
+        cardError.textContent = "";
+      }
+
+      function openSettingsDialog() {
+        const input = settingsForm.elements.openMode;
+        input.value = state.settings.openMode;
+        gridColumns.value = String(clampGridSize(state.settings.gridColumns, 5));
+        gridRows.value = String(clampGridSize(state.settings.gridRows, 5));
+        settingsImportError.textContent = "";
+        importConfigFile.value = "";
+        settingsDialog.showModal();
+      }
+
+      function closeSettingsDialog() {
+        settingsDialog.close();
+      }
+
+      function getSerializableState() {
+        return normalizeState(state) || getDefaultState();
+      }
+
+      async function exportConfig() {
+        settingsImportError.textContent = "";
+
+        const payload = {
+          version: 1,
+          exportedAt: new Date().toISOString(),
+          data: getSerializableState()
+        };
+        const json = JSON.stringify(payload, null, 2);
+        const date = new Date().toISOString().slice(0, 10);
+        const fileName = `startpage-config-${date}.json`;
+
+        if ("showSaveFilePicker" in window) {
+          try {
+            const handle = await window.showSaveFilePicker({
+              suggestedName: fileName,
+              types: [{
+                description: "JSON 파일",
+                accept: { "application/json": [".json"] }
+              }]
+            });
+            const writable = await handle.createWritable();
+            await writable.write(new Blob([json], { type: "application/json" }));
+            await writable.close();
+            return;
+          } catch (error) {
+            if (error && error.name === "AbortError") return;
+          }
+        }
+
+        const blob = new Blob([json], { type: "application/json" });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+
+        link.href = url;
+        link.download = fileName;
+        document.body.append(link);
+        link.click();
+        link.remove();
+        window.setTimeout(() => URL.revokeObjectURL(url), 0);
+      }
+
+      function requestImportConfig() {
+        settingsImportError.textContent = "";
+        importConfigFile.value = "";
+        importConfigFile.click();
+      }
+
+      async function importConfig(file) {
+        if (!file) return;
+        settingsImportError.textContent = "";
+
+        if (file.size > 1024 * 1024) {
+          settingsImportError.textContent = "1MB 이하의 JSON 파일만 가져올 수 있습니다.";
+          importConfigFile.value = "";
+          return;
+        }
+
+        try {
+          const parsed = JSON.parse(await file.text());
+          const nextState = normalizeState(parsed);
+          if (!nextState) throw new Error("invalid-config");
+          if (!window.confirm("현재 구성을 가져온 JSON으로 바꿀까요?")) return;
+
+          state = nextState;
+          openMenuId = null;
+          editingId = null;
+          pendingCardSlot = null;
+          editingTitle = null;
+          saveState();
+          closeSettingsDialog();
+          render();
+        } catch {
+          settingsImportError.textContent = "JSON 파일을 확인하세요.";
+        } finally {
+          importConfigFile.value = "";
+        }
+      }
+
+      function openTitleDialog(axis, index) {
+        editingTitle = { axis, index };
+        titleDialogTitle.textContent = axis === "row" ? `행 ${index + 1} 타이틀` : `열 ${index + 1} 타이틀`;
+        titleText.value = axis === "row" ? state.rowTitles[index] || "" : state.columnTitles[index] || "";
+        titleDialog.showModal();
+        requestAnimationFrame(() => titleText.focus());
+      }
+
+      function closeTitleDialog() {
+        titleDialog.close();
+        editingTitle = null;
+        titleForm.reset();
+      }
+
+      function saveTitle() {
+        if (!editingTitle) return;
+
+        const nextTitle = titleText.value.trim();
+        const titles = editingTitle.axis === "row" ? state.rowTitles : state.columnTitles;
+        titles[editingTitle.index] = nextTitle;
+        saveState();
+        closeTitleDialog();
+        render();
+      }
+
+      function upsertCard() {
+        const name = cardName.value.trim();
+        const description = cardDescription.value.trim();
+        let url = "";
+
+        if (!name) {
+          cardError.textContent = "이름을 입력하세요.";
+          cardName.focus();
+          return;
+        }
+
+        try {
+          url = normalizeUrl(cardUrl.value);
+        } catch {
+          cardError.textContent = "주소 형식을 확인하세요.";
+          cardUrl.focus();
+          return;
+        }
+
+        if (editingId) {
+          state.cards = state.cards.map((card) => (
+            card.id === editingId
+              ? { ...card, name, description, url }
+              : card
+          ));
+        } else {
+          state.cards.push({
+            id: createId(),
+            name,
+            description,
+            url,
+            slot: getNextOpenSlot(pendingCardSlot)
+          });
+        }
+
+        saveState();
+        closeCardDialog();
+        render();
+      }
+
+      function deleteCard(cardId) {
+        const card = state.cards.find((item) => item.id === cardId);
+        if (!card) return;
+
+        if (!window.confirm(`"${card.name}" 카드를 삭제할까요?`)) return;
+        state.cards = state.cards.filter((item) => item.id !== cardId);
+        openMenuId = null;
+        saveState();
+        render();
+      }
+
+      function openUrl(card) {
+        if (!card.url) return;
+
+        if (state.settings.openMode === "new") {
+          window.open(card.url, "_blank", "noopener");
+          return;
+        }
+
+        window.location.href = card.url;
+      }
+
+      function getCardById(cardId) {
+        return state.cards.find((card) => card.id === cardId);
+      }
+
+      function closeOpenMenu() {
+        if (!openMenuId) return;
+        openMenuId = null;
+        render();
+      }
+
+      function isInteractiveTarget(target) {
+        return Boolean(target.closest("button, input, textarea, select, label"));
+      }
+
+      function beginPress(event, cardElement) {
+        if (event.pointerType === "mouse" && event.button !== 0) return;
+        if (isInteractiveTarget(event.target)) return;
+
+        const isMouse = event.pointerType === "mouse";
+
+        pressState = {
+          id: cardElement.dataset.id,
+          pointerId: event.pointerId,
+          pointerType: event.pointerType,
+          startX: event.clientX,
+          startY: event.clientY,
+          lastX: event.clientX,
+          lastY: event.clientY,
+          cardElement,
+          timer: isMouse ? null : window.setTimeout(() => beginDrag(), LONG_PRESS_MS)
+        };
+
+        cardElement.setPointerCapture(event.pointerId);
+      }
+
+      function clearPress() {
+        if (!pressState) return;
+        window.clearTimeout(pressState.timer);
+        pressState = null;
+      }
+
+      function beginDrag() {
+        if (!pressState) return;
+
+        const card = getCardById(pressState.id);
+        const sourceIndex = state.cards.findIndex((item) => item.id === pressState.id);
+        const sourceSlot = card ? normalizeSlot(card.slot, sourceIndex) : sourceIndex;
+        const sourceElement = pressState.cardElement;
+        if (!card || sourceIndex < 0 || !sourceElement.isConnected) {
+          clearPress();
+          return;
+        }
+
+        openMenuId = null;
+        const sourceRect = sourceElement.getBoundingClientRect();
+        const gap = getGridGap();
+        board.style.setProperty("--cell-w", `${sourceRect.width + gap.column}px`);
+        board.style.setProperty("--cell-h", `${sourceRect.height + gap.row}px`);
+
+        const marker = document.createElement("div");
+        marker.className = "drop-marker";
+        marker.setAttribute("aria-hidden", "true");
+
+        const ghost = sourceElement.cloneNode(true);
+        ghost.classList.add("drag-ghost");
+        ghost.style.width = `${sourceRect.width}px`;
+        ghost.style.height = `${sourceRect.height}px`;
+        ghost.querySelectorAll(".card-menu, .card-menu-button").forEach((node) => node.remove());
+        document.body.append(ghost);
+
+        sourceElement.classList.add("is-hidden-during-drag");
+        board.classList.add("is-dragging");
+        document.body.classList.add("dragging-card");
+
+        dragState = {
+          id: pressState.id,
+          sourceSlot,
+          targetSlot: sourceSlot,
+          marker,
+          ghost,
+          offsetX: pressState.lastX - sourceRect.left,
+          offsetY: pressState.lastY - sourceRect.top
+        };
+
+        insertMarker(sourceSlot);
+        moveGhost(pressState.lastX, pressState.lastY);
+        suppressCardClickUntil = Date.now() + 500;
+      }
+
+      function updatePressOrDrag(event) {
+        if (pressState && event.pointerId === pressState.pointerId) {
+          pressState.lastX = event.clientX;
+          pressState.lastY = event.clientY;
+
+          if (!dragState) {
+            const distance = Math.hypot(event.clientX - pressState.startX, event.clientY - pressState.startY);
+
+            if (pressState.pointerType === "mouse") {
+              if (distance <= MOVE_TOLERANCE) return;
+              beginDrag();
+            } else if (distance > MOVE_TOLERANCE) {
+              clearPress();
+              return;
+            } else {
+              return;
+            }
+          }
+        }
+
+        if (!dragState) return;
+        event.preventDefault();
+        moveGhost(event.clientX, event.clientY);
+        const nextSlot = getDropSlot(event.clientX, event.clientY);
+        if (nextSlot !== dragState.targetSlot) {
+          dragState.targetSlot = nextSlot;
+          insertMarker(nextSlot);
+        }
+      }
+
+      function finishPressOrDrag(event) {
+        if (pressState && event.pointerId !== pressState.pointerId) return;
+
+        if (!dragState) {
+          clearPress();
+          return;
+        }
+
+        const { id, targetSlot } = dragState;
+        moveCardToSlot(id, targetSlot);
+        saveState();
+        cleanupDrag();
+        render();
+        suppressCardClickUntil = Date.now() + 500;
+      }
+
+      function cancelDrag() {
+        clearPress();
+        cleanupDrag();
+        render();
+        suppressCardClickUntil = Date.now() + 500;
+      }
+
+      function cleanupDrag() {
+        if (dragState) {
+          dragState.marker.remove();
+          dragState.ghost.remove();
+          dragState = null;
+        }
+
+        document.querySelectorAll(".is-hidden-during-drag").forEach((node) => {
+          node.classList.remove("is-hidden-during-drag");
+        });
+        board.classList.remove("is-dragging");
+        document.body.classList.remove("dragging-card");
+        clearPress();
+      }
+
+      function moveGhost(clientX, clientY) {
+        if (!dragState) return;
+        dragState.ghost.style.left = `${clientX - dragState.offsetX}px`;
+        dragState.ghost.style.top = `${clientY - dragState.offsetY}px`;
+      }
+
+      function moveCardToSlot(cardId, targetSlot) {
+        const cards = normalizeCards(state.cards);
+        const movedCard = cards.find((card) => card.id === cardId);
+        if (!movedCard) return;
+
+        const otherCards = cards.filter((card) => card.id !== cardId);
+        const occupiedSlots = new Map(otherCards.map((card) => [card.slot, card]));
+        let openSlot = targetSlot;
+
+        while (occupiedSlots.has(openSlot)) openSlot += 1;
+
+        for (let slot = openSlot; slot > targetSlot; slot -= 1) {
+          const card = occupiedSlots.get(slot - 1);
+          if (!card) continue;
+          occupiedSlots.delete(slot - 1);
+          card.slot = slot;
+          occupiedSlots.set(slot, card);
+        }
+
+        movedCard.slot = targetSlot;
+        state.cards = normalizeCards([...otherCards, movedCard]);
+      }
+
+      function insertMarker(slot) {
+        if (!dragState) return;
+
+        placeElementAtSlot(dragState.marker, slot);
+        if (!dragState.marker.isConnected) {
+          board.append(dragState.marker);
+        }
+      }
+
+      function getDropSlot(clientX, clientY) {
+        if (!dragState) return 0;
+
+        const rect = board.getBoundingClientRect();
+        const gap = getGridGap();
+        const columns = getColumnCount();
+        const cellRect = dragState.marker.getBoundingClientRect();
+        const cellWidth = Math.max(1, cellRect.width + gap.column);
+        const cellHeight = Math.max(1, cellRect.height + gap.row);
+        const relX = clientX - rect.left;
+        const relY = clientY - rect.top;
+        const col = Math.max(0, Math.min(columns - 1, Math.floor(relX / cellWidth)));
+        const row = Math.max(0, Math.floor(relY / cellHeight));
+        const slot = row * columns + col;
+
+        return Math.max(0, Math.min(slot, getMaxDropSlot(columns)));
+      }
+
+      function getMaxDropSlot(columns) {
+        const rows = clampGridSize(state.settings.gridRows, 5);
+        return (columns * rows) - 1;
+      }
+
+      function getColumnCount() {
+        return clampGridSize(state.settings.gridColumns, 5);
+      }
+
+      function getGridGap() {
+        const style = getComputedStyle(board);
+        return {
+          column: Number.parseFloat(style.columnGap) || 0,
+          row: Number.parseFloat(style.rowGap) || 0
+        };
+      }
+
+      addButton.addEventListener("click", toggleEditMode);
+      settingsButton.addEventListener("click", openSettingsDialog);
+      cardCancelButton.addEventListener("click", closeCardDialog);
+      cardCloseButton.addEventListener("click", closeCardDialog);
+      settingsCloseButton.addEventListener("click", closeSettingsDialog);
+      exportConfigButton.addEventListener("click", exportConfig);
+      importConfigButton.addEventListener("click", requestImportConfig);
+      importConfigFile.addEventListener("change", () => {
+        importConfig(importConfigFile.files && importConfigFile.files[0]);
+      });
+      titleCancelButton.addEventListener("click", closeTitleDialog);
+      titleCloseButton.addEventListener("click", closeTitleDialog);
+
+      cardForm.addEventListener("submit", (event) => {
+        event.preventDefault();
+        upsertCard();
+      });
+
+      titleForm.addEventListener("submit", (event) => {
+        event.preventDefault();
+        saveTitle();
+      });
+
+      settingsForm.addEventListener("submit", (event) => {
+        event.preventDefault();
+        const currentColumns = clampGridSize(state.settings.gridColumns, 5);
+        const nextColumns = clampGridSize(gridColumns.value, 5);
+        state.settings.openMode = settingsForm.elements.openMode.value === "new" ? "new" : "current";
+        preserveCardCoordinates(currentColumns, nextColumns);
+        state.settings.gridColumns = nextColumns;
+        state.settings.gridRows = clampGridSize(gridRows.value, 5);
+        saveState();
+        closeSettingsDialog();
+        render();
+      });
+
+      gridShell.addEventListener("click", (event) => {
+        const titleCell = event.target.closest(".title-cell[data-axis][data-index]");
+        if (!titleCell) return;
+        if (!isEditMode) return;
+
+        openTitleDialog(titleCell.dataset.axis, Number.parseInt(titleCell.dataset.index, 10));
+      });
+
+      board.addEventListener("pointerdown", (event) => {
+        const cardElement = event.target.closest(".card[data-id]");
+        if (!cardElement) return;
+        beginPress(event, cardElement);
+      });
+
+      board.addEventListener("click", (event) => {
+        const emptySlot = event.target.closest(".empty-slot[data-slot]");
+        if (emptySlot) {
+          if (!isEditMode) return;
+          openMenuId = null;
+          openCardDialog(null, Number.parseInt(emptySlot.dataset.slot, 10));
+          return;
+        }
+
+        const menuButton = event.target.closest(".card-menu-button");
+        if (menuButton) {
+          const cardElement = menuButton.closest(".card[data-id]");
+          openMenuId = openMenuId === cardElement.dataset.id ? null : cardElement.dataset.id;
+          render();
+          return;
+        }
+
+        const actionButton = event.target.closest("[data-action]");
+        if (actionButton) {
+          const cardElement = actionButton.closest(".card[data-id]");
+          const action = actionButton.dataset.action;
+          const card = getCardById(cardElement.dataset.id);
+          if (!card) return;
+
+          if (action === "edit") {
+            openMenuId = null;
+            render();
+            openCardDialog(card);
+          } else if (action === "delete") {
+            deleteCard(card.id);
+          }
+          return;
+        }
+
+        const cardElement = event.target.closest(".card[data-id]");
+        if (!cardElement || Date.now() < suppressCardClickUntil) return;
+        const card = getCardById(cardElement.dataset.id);
+        if (card) openUrl(card);
+      });
+
+      board.addEventListener("keydown", (event) => {
+        if (!["Enter", " "].includes(event.key)) return;
+        const cardElement = event.target.closest(".card[data-id]");
+        if (!cardElement || isInteractiveTarget(event.target)) return;
+        const card = getCardById(cardElement.dataset.id);
+        if (!card || !card.url) return;
+
+        event.preventDefault();
+        openUrl(card);
+      });
+
+      document.addEventListener("pointermove", updatePressOrDrag, { passive: false });
+      document.addEventListener("pointerup", finishPressOrDrag);
+      document.addEventListener("pointercancel", cancelDrag);
+      document.addEventListener("keydown", (event) => {
+        if (event.key === "Escape" && dragState) {
+          cancelDrag();
+        }
+      });
+      document.addEventListener("click", (event) => {
+        if (!openMenuId) return;
+        if (event.target.closest(".card-menu") || event.target.closest(".card-menu-button")) return;
+        closeOpenMenu();
+      });
+
+      render();
+    })();
+  </script>
+</body>
+</html>
